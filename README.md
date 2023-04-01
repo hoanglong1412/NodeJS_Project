@@ -13,3 +13,5 @@ Go to file package.json and change scripts->start to "nodemon ./bin/www" then yo
 npm i mongoose 
 
 npm i shortid
+
+npm install express-validator
