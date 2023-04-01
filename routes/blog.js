@@ -2,13 +2,13 @@ const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
 
-const { userModel } = require('../db/mdl_user');
+const { blogModel } = require('../db/mdl_blog');
 
 // Get all topic
 router.get('/', async function (req, res, next) {
     try {
-        const users = await userModel.list();
-        res.json(users);
+        const blogs = await blogModel.list();
+        res.json(blogs);
     } catch (error) {
         console.log(error);
         next(error);
@@ -19,8 +19,8 @@ router.get('/', async function (req, res, next) {
 router.get('/:id', async function (req, res, next) {
     const id = req.params.id;
     try {
-        const users = await userModel.findById(id);
-        res.json(users);
+        const blogs = await blogModel.findById(id);
+        res.json(blogs);
     } catch (error) {
         next(error);
     }
@@ -29,12 +29,12 @@ router.get('/:id', async function (req, res, next) {
 // insert new topic
 router.post('/',
     // middleware validate
-    body('name')
+    body('title')
         .isLength({ min: 5, max: 50 })
         .withMessage('must be from 5 - 50 chars long')
         .trim()
         .escape(),
-    body('password')
+    body('content')
         .isLength({ min: 5 })
         .withMessage('must be from 5 - 50 chars long')
         .trim()
@@ -46,12 +46,14 @@ router.post('/',
         }
 
         const body = req.body;
-        const newUser = {
-            name: body.name,
-            password: body.password,
+        const newBlog = {
+            title: body.title,
+            content: body.content,
+            creatBy: body.creatBy,
+            topicList: body.topicList,
         };
         try {
-            const topic = await userModel.insert(newUser);
+            const topic = await blogModel.insert(newBlog);
             res.status(201).json(topic);
         } catch (error) {
             next(error);
@@ -62,8 +64,8 @@ router.post('/',
 router.put('/:id', async function (req, res, next) {
     const id = req.params.id;
     try {
-        const users = await userModel.edit(id, req.body);
-        res.json(users);
+        const blogs = await blogModel.edit(id, req.body);
+        res.json(blogs);
     } catch (error) {
         next(error);
     }
@@ -73,11 +75,11 @@ router.put('/:id', async function (req, res, next) {
 router.delete('/:id', async function (req, res, next) {
     const id = req.params.id;
     try {
-        const users = await userModel.del(id);
-        if (users.deletedCount === 0) {
+        const blogs = await blogModel.del(id);
+        if (blogs.deletedCount === 0) {
             return res.status(404).send('Not found');
         }
-        res.json(users);
+        res.json(blogs);
     } catch (error) {
         next(error);
     }
